@@ -85,13 +85,6 @@ describe('AuthService', () => {
       const error = new Error('Unknown error');
       jest.spyOn(userService, 'create').mockRejectedValueOnce(error);
 
-      // try {
-      //   await authService.signUp(mockSignUp);
-      // } catch (error) {
-      //   expect(error.message).toEqual('Unknown error');
-      //   expect(error.status).toEqual(500);
-      // }
-
       // call authService method and check if it throws ConflictException
       await expect(authService.signUp(mockSignUp)).rejects.toThrowError(
         new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR),
