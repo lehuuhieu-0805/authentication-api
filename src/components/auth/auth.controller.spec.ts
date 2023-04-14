@@ -2,10 +2,16 @@ import { Test } from '@nestjs/testing';
 import { User } from '../user/user.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 
 describe('AuthController', () => {
   const mockSignUp: SignUpDto = {
+    email: 'hieu',
+    password: '1',
+  };
+
+  const mockSignIn: SignInDto = {
     email: 'hieu',
     password: '1',
   };
@@ -21,6 +27,7 @@ describe('AuthController', () => {
           provide: AuthService,
           useValue: {
             signUp: jest.fn(),
+            signIn: jest.fn(),
           },
         },
       ],
@@ -54,6 +61,23 @@ describe('AuthController', () => {
 
       // check if service method was called with correct argument
       expect(service.signUp).toHaveBeenCalledWith(mockSignUp);
+    });
+  });
+
+  describe('sign-in', () => {
+    it('should return a token', async () => {
+      const access_token = 'token';
+
+      // mock service method
+      jest
+        .spyOn(service, 'signIn')
+        .mockResolvedValueOnce({ access_token: 'token' });
+
+      // call controller method
+      const result = await controller.signIn(mockSignIn);
+
+      // check result
+      expect(result.access_token).toEqual(access_token);
     });
   });
 });

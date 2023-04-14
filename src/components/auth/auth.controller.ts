@@ -16,4 +16,13 @@ export class AuthController {
   async signUp(@Body() signUpDto: SignUpDto) {
     return await this.authService.signUp(signUpDto);
   }
+
+  @Post('sign-in')
+  @ApiResponse({
+    status: 201,
+    description: 'User signed in successfully.',
+  })
+  async signIn(@Body() signInDto: SignUpDto) {
+    return await this.authService.signIn(signInDto);
+  }
 }
