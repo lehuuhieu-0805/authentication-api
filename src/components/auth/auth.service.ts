@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -8,10 +9,13 @@ export class AuthService {
   constructor(@Inject(UserService) private readonly userService: UserService) {}
 
   async signUp(signUpDto: SignUpDto): Promise<User> {
+    const saltOrRounds = 10;
+    const passwordHash = await bcrypt.hash(signUpDto.password, saltOrRounds);
+
     const user = new User();
 
     user.email = signUpDto.email;
-    user.password = signUpDto.password;
+    user.password = passwordHash;
     user.verifyCode = '123456';
     user.isVerified = false;
 

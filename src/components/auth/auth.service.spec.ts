@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as bcrypt from 'bcrypt';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
@@ -42,9 +43,10 @@ describe('AuthService', () => {
 
   describe('when user sign up', () => {
     it('should create a new user', async () => {
+      const passwordHash = await bcrypt.hash(mockSignUp.password, 10);
       const user = new User();
       user.email = mockSignUp.email;
-      user.password = mockSignUp.password;
+      user.password = passwordHash;
       user.verifyCode = '123456';
       user.isVerified = false;
 
@@ -54,8 +56,10 @@ describe('AuthService', () => {
 
       const result = await authService.signUp(mockSignUp);
 
-      // check if userService method was called with correct argument
-      expect(userService.create).toHaveBeenCalledWith(user);
+      expect(await bcrypt.compare(mockSignUp.password, result.password)).toBe(
+        true,
+      );
+
       expect(result).toEqual(user);
     });
 
@@ -70,14 +74,6 @@ describe('AuthService', () => {
       await expect(authService.signUp(mockSignUp)).rejects.toThrowError(
         new HttpException('Email already exists', HttpStatus.CONFLICT),
       );
-
-      // check if userService method was called with correct argument
-      expect(userService.create).toHaveBeenCalledWith({
-        email: mockSignUp.email,
-        password: mockSignUp.password,
-        verifyCode: '123456',
-        isVerified: false,
-      });
     });
 
     it('throw an InternalServerErrorException if user sign up with a email that is exists', async () => {
@@ -89,14 +85,6 @@ describe('AuthService', () => {
       await expect(authService.signUp(mockSignUp)).rejects.toThrowError(
         new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR),
       );
-
-      // check if userService method was called with correct argument
-      expect(userService.create).toHaveBeenCalledWith({
-        email: mockSignUp.email,
-        password: mockSignUp.password,
-        verifyCode: '123456',
-        isVerified: false,
-      });
     });
   });
 });
