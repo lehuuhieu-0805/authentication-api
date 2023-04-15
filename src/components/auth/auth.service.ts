@@ -64,6 +64,13 @@ export class AuthService {
       );
     }
 
+    if (!user.isVerified) {
+      throw new HttpException(
+        'Please verify your account.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
     const payload = { email: user.email };
 
     return { access_token: await this.jwtService.signAsync(payload) };
