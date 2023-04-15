@@ -15,12 +15,12 @@ import { SignUpDto } from './dto/sign-up.dto';
 
 describe('AuthService', () => {
   const mockSignUp: SignUpDto = {
-    email: 'hieu',
-    password: '1',
+    email: 'hieu@gmail.com',
+    password: '12345678',
   };
   const mockSignIn: SignInDto = {
-    email: 'hieu',
-    password: '1',
+    email: 'hieu@gmail.com',
+    password: '12345678',
   };
 
   let authService: AuthService;
