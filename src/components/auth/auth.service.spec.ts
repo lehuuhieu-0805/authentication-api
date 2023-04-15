@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   HttpException,
   HttpStatus,
@@ -26,6 +27,7 @@ describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
   let jwtService: JwtService;
+  let mailerService: MailerService;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -36,6 +38,7 @@ describe('AuthService', () => {
           useValue: {
             create: jest.fn(),
             findOne: jest.fn(),
+            update: jest.fn(),
           },
         },
         {
@@ -44,12 +47,19 @@ describe('AuthService', () => {
             signAsync: jest.fn(),
           },
         },
+        {
+          provide: MailerService,
+          useValue: {
+            sendMail: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     authService = moduleRef.get<AuthService>(AuthService);
     userService = moduleRef.get<UserService>(UserService);
     jwtService = moduleRef.get<JwtService>(JwtService);
+    mailerService = moduleRef.get<MailerService>(MailerService);
   });
 
   it('auth service should be defined', () => {
@@ -83,8 +93,6 @@ describe('AuthService', () => {
     });
 
     it('throw an ConflictException if user sign up with a email that is exists', async () => {
-      await authService.signUp(mockSignUp);
-
       // mock service method
       const error = new Error('Email already exists');
       jest.spyOn(userService, 'create').mockRejectedValue(error);
@@ -173,6 +181,55 @@ describe('AuthService', () => {
         expect(error.message).toEqual('Email or password is not correct.');
         expect(error.status).toEqual(HttpStatus.UNAUTHORIZED);
       }
+    });
+
+    describe('when user verify account', () => {
+      it('should return success message if user verify account successfully', async () => {
+        const user = new User();
+        user.email = mockSignIn.email;
+        user.password = await bcrypt.hash(mockSignIn.password, 10);
+        user.verifyCode = '123456';
+        user.isVerified = false;
+
+        jest.spyOn(userService, 'findOne').mockResolvedValueOnce(user);
+        const result = await authService.verifyAccount(
+          mockSignIn.email,
+          '123456',
+        );
+
+        expect(result.message).toEqual('Account verified successfully.');
+      });
+
+      it('should throw BadRequestException if user verify account with wrong verify code', async () => {
+        const user = new User();
+        user.email = mockSignIn.email;
+        user.password = await bcrypt.hash(mockSignIn.password, 10);
+        user.verifyCode = '123456';
+        user.isVerified = false;
+
+        jest.spyOn(userService, 'findOne').mockResolvedValueOnce(user);
+
+        try {
+          await authService.verifyAccount(mockSignIn.email, '1234567');
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect(error.message).toEqual('Verify code is not correct.');
+          expect(error.status).toEqual(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      it('should return success message if user resend verify code successfully', async () => {
+        const user = new User();
+        user.email = mockSignIn.email;
+        user.password = await bcrypt.hash(mockSignIn.password, 10);
+        user.verifyCode = '123456';
+        user.isVerified = false;
+
+        jest.spyOn(userService, 'findOne').mockResolvedValueOnce(user);
+        const result = await authService.resendVerifyCode(mockSignIn.email);
+
+        expect(result.message).toEqual('Email sent successfully.');
+      });
     });
   });
 });

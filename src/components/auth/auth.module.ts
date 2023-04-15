@@ -1,3 +1,4 @@
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,6 +15,15 @@ import { AuthService } from './auth.service';
       global: true,
       secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '10m' },
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        auth: {
+          user: '01643815296h@gmail.com',
+          pass: 'mhmkmnekktqshfca',
+        },
+      },
     }),
   ],
   controllers: [AuthController],

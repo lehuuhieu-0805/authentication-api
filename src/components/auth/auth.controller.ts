@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -24,5 +24,18 @@ export class AuthController {
   })
   async signIn(@Body() signInDto: SignUpDto) {
     return await this.authService.signIn(signInDto);
+  }
+
+  @Get('resend-verify-code')
+  async resendVerifyCode(@Query('email') email: string) {
+    return await this.authService.resendVerifyCode(email);
+  }
+
+  @Get('verify-account')
+  async verifyAccount(
+    @Query('email') email: string,
+    @Query('verifyCode') verifyCode: string,
+  ) {
+    return await this.authService.verifyAccount(email, verifyCode);
   }
 }

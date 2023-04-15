@@ -18,4 +18,10 @@ export class UserService {
   async findOne(email: string): Promise<User> {
     return await this.repo.findOne({ where: { email } });
   }
+
+  async update(user: User): Promise<User> {
+    await this.repo.save(user);
+
+    return user;
+  }
 }
