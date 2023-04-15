@@ -18,10 +18,10 @@ import { AuthService } from './auth.service';
     }),
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.gmail.com',
+        host: process.env.EMAIL_HOST,
         auth: {
-          user: '01643815296h@gmail.com',
-          pass: 'mhmkmnekktqshfca',
+          user: process.env.EMAIL_ADDRESS,
+          pass: process.env.EMAIL_PASSWORD,
         },
       },
     }),
