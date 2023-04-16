@@ -1,0 +1,30 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  email: String!
+  password: String!
+  verifyCode: String
+  isVerified: Boolean
+}
+
+type MessageResponse {
+  message: String!
+}
+
+type SignInResponse {
+  access_token: String!
+}
+
+type Query {
+  user(email: String!): User!
+  users: [User!]!
+}
+
+type Mutation {
+  signIn(email: String!, password: String!): SignInResponse!
+  signUp(email: String!, password: String!): User!
+  verifyAccount(email: String!, verifyCode: String!): MessageResponse!
+  resendVerifyCode(email: String!): MessageResponse!
+}
