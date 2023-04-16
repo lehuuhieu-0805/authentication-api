@@ -1,12 +1,27 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from '../user/user.entity';
+import { UserService } from './../user/user.service';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './current-user.decorator';
 import { SignUpDto } from './dto/sign-up.dto';
+import { GqlAuthGuard } from './gql-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(@Inject(AuthService) private readonly authService: AuthService) {}
+  constructor(
+    @Inject(AuthService) private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post('sign-up')
   @ApiResponse({
@@ -37,5 +52,12 @@ export class AuthController {
     @Query('verifyCode') verifyCode: string,
   ) {
     return await this.authService.verifyAccount(email, verifyCode);
+  }
+
+  @Get('user')
+  @UseGuards(GqlAuthGuard)
+  async getUser(@CurrentUser() user: User) {
+    const { email } = user;
+    return await this.userService.findOne(email);
   }
 }

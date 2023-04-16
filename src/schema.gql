@@ -18,8 +18,7 @@ type SignInResponse {
 }
 
 type Query {
-  user(email: String!): User!
-  users: [User!]!
+  getUser: User!
 }
 
 type Mutation {
