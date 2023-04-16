@@ -122,7 +122,7 @@ describe('AuthService', () => {
       user.email = mockSignIn.email;
       user.password = await bcrypt.hash(mockSignIn.password, 10);
       user.verifyCode = '123456';
-      user.isVerified = false;
+      user.isVerified = true;
 
       jest.spyOn(userService, 'findOne').mockResolvedValueOnce(user);
 
@@ -158,7 +158,7 @@ describe('AuthService', () => {
       user.email = mockSignIn.email;
       user.password = await bcrypt.hash('test', 10);
       user.verifyCode = '123456';
-      user.isVerified = false;
+      user.isVerified = true;
 
       jest.spyOn(userService, 'findOne').mockResolvedValueOnce(user);
 
