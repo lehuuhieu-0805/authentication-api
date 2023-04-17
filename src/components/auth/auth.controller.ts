@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../user/user.entity';
 import { UserService } from './../user/user.service';
@@ -19,7 +11,7 @@ import { GqlAuthGuard } from './gql-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(AuthService) private readonly authService: AuthService,
+    private readonly authService: AuthService,
     private readonly userService: UserService,
   ) {}
 

@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../user/user.entity';
@@ -10,7 +10,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(UserService) private readonly userService: UserService,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
   ) {}
