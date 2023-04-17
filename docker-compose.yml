@@ -2,27 +2,28 @@ version: '3'
 
 services:
   mssql:
-    build: ./src/database
+    build:
+      context: .
+      dockerfile: ./src/database/Dockerfile
     ports:
       - 1433:1433
     volumes:
       - vmssql:/var/opt/mssql
     networks:
       - default
+    restart: always
     
   api-dev:
     container_name: authentication-api-dev
     image: authentication-api-dev:1.0.0
     depends_on:
       - mssql
-    links:
-      - "mssql:mssql"
     env_file:
       - ./.env
     build: 
       context: .
       target: development
-      dockerfile: ./dockerfile
+      dockerfile: ./Dockerfile
     command: yarn run start:debug
     ports:
       - 4000:4000
@@ -31,20 +32,19 @@ services:
       - /usr/src/app/node_modules
     networks:
       - default
+    restart: always
 
   api-prod:
     container_name: authentication-api-prod
     image: authentication-api-prod:1.0.0
     depends_on:
       - mssql
-    links:
-      - "mssql:mssql"
     env_file:
       - ./.env
     build: 
       context: .
       target: production
-      dockerfile: ./dockerfile
+      dockerfile: ./Dockerfile
     command: yarn run start:prod
     ports:
       - 4001:4001
@@ -53,6 +53,7 @@ services:
       - /usr/src/app/node_modules
     networks:
       - default
+    restart: always
 
 volumes:
   vmssql:
